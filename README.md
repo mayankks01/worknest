@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 3 accounts, plus the foundation and dashboard design preview.** Registration, email verification, login/logout, password reset, protected sessions, rate limits, and account screens are implemented. Organizations, tenant isolation, and persisted project/task workflows remain later stages. This is a local development build, not a public deployment.
+**Current scope: Step 4 organizations and tenant isolation, plus accounts and the design preview.** Verified users can create private organizations, switch workspaces, and update permitted settings. Creation is atomic and idempotent; PostgreSQL forces tenant isolation and Owner constraints. Team invitations and persisted project/task workflows remain later stages. This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 
@@ -20,7 +20,7 @@ On macOS/Linux use `cp .env.example .env` for the first command. Keep an existin
 
 Open the app at http://localhost:5173. The frontend proxies `/api` to Django on the same origin. Create an account, then open http://localhost:8025 to find its verification email in Mailpit. Local emails are captured here instead of being sent externally. Set `PUBLIC_APP_URL` in `.env` to the exact frontend origin, then recreate web/worker/beat if it changes. Account details and tests are documented in `docs/ACCOUNTS.md`.
 
-The sample dashboard remains at `/preview` and runs without a backend. Account screens at `/` require the API and local services. For native frontend development, run `npm ci` and `npm run dev` in `frontend/`; use `npm run dev -- --port 5174` when needed and match `PUBLIC_APP_URL` to that port. Search, switch example organizations, or open a Board/List inside the design preview; these records still reset on refresh.
+After verification, `/` opens your real organization list. Create an organization, open its overview, or change settings as its Owner. See `docs/ORGANIZATIONS.md` for API and isolation details. The sample dashboard remains at `/preview` and runs without a backend. For native frontend development, run `npm ci` and `npm run dev` in `frontend/`; use `npm run dev -- --port 5174` when needed and match `PUBLIC_APP_URL` to that port. Records inside the design preview still reset on refresh and are never assigned to real accounts.
 
 | Service | Address / purpose |
 | --- | --- |
@@ -79,7 +79,7 @@ npm run build
 
 The suite covers health checks plus registration, verification, recovery, CSRF, session rotation/expiry/revocation, token races, atomic Redis limits, and email retries. CI uses disposable PostgreSQL/Redis services. A separate local HTTP smoke check exercises real Celery delivery to Mailpit; see `docs/ACCOUNTS.md`.
 
-CI is defined in `.github/workflows/ci.yml`. See `docs/STEP-3-VERIFICATION.md` for the actual local results; saving a workflow does not prove a hosted run passed.
+CI is defined in `.github/workflows/ci.yml`. Organization checks cover forced RLS under a restricted role, Owner/composite constraints, concurrent idempotency, role permissions, immediate membership revocation, and transaction-context cleanup. See `docs/STEP-4-VERIFICATION.md` for local results; saving a workflow does not prove a hosted run passed.
 
 ## Structure and boundaries
 
@@ -87,15 +87,16 @@ CI is defined in `.github/workflows/ci.yml`. See `docs/STEP-3-VERIFICATION.md` f
 backend/config/       Django configuration, routes, WSGI, Celery
 backend/foundation/   Health endpoints and request IDs
 backend/accounts/     Global identities, account tokens, email jobs and API
-backend/tests/        Foundation and account checks
-frontend/src/         React/TypeScript UI preview, components, and sample fixtures
+backend/organizations/ Organizations, memberships, tenant context, RLS, audit/outbox capture
+backend/tests/        Foundation, account and adversarial tenant checks
+frontend/src/         Account/organization UI, plus isolated preview components and fixtures
 infra/postgres/       Initial database roles and grants
 scripts/              Local startup helper
 docs/                 Architecture and stage verification
 .github/workflows/    Backend, frontend, and integration checks
 ```
 
-Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. No tenant tables exist yet, so there are no RLS policies to test at this stage. Tenant transactions and forced RLS arrive in Step 4 and must be implemented on each tenant table as it is introduced.
+Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. All organization foundation tables now have forced RLS. New tenant tables must receive transaction scoping, policies, relationship constraints, and isolation tests when introduced.
 
 Step 3 defines the custom user before installing Django authentication, avoiding a premature default-user migration. The original content-type-only foundation has now been migrated to the custom user and session schema.
 
@@ -103,4 +104,4 @@ The dependency versions are exact in Python requirements and the npm lockfile. P
 
 ## Next checkpoint
 
-After reviewing Step 3, authorize **Step 4: organizations and tenant isolation**. Do not start another stage without the user's approval.
+After reviewing Step 4, authorize **Step 5: team administration** (invitations, members, roles, ownership transfer, and member limits). Do not start another stage without the user's approval. Completed steps are committed and pushed to GitHub before asking to proceed.

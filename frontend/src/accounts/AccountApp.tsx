@@ -3,6 +3,7 @@ import Preview from '../App';
 import { Icon } from '../components/Icon';
 import { ApiError, getSession, postAuth, type Account } from './api';
 import './accounts.css';
+import Workspace from '../organizations/Workspace';
 
 const paths = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/resend-verification'];
 
@@ -41,6 +42,8 @@ export default function AccountApp() {
   }, [path]);
   if (path === '/preview') return <><div className="preview-return"><a href="/">← Back to your account</a><span>Sample data only</span></div><Preview /></>;
   const route = paths.includes(path) ? path : user ? '/account' : '/login';
+  if (loading && !paths.includes(path)) return <div className="wn-opening" role="status"><span className="brand-symbol"><Icon name="logo" /></span>Opening WorkNest…</div>;
+  if (!loading && !offline && route === '/account' && user?.verified_at) return <Workspace user={user} />;
   return <Frame>{loading ? <div role="status" className="account-loading">Opening WorkNest…</div> : offline ? <><h2>Let’s reconnect</h2><p className="account-description">{offline}</p><button className="account-primary" onClick={() => { setLoading(true); void refresh(); }}>Try again</button></> : route === '/account' && user ? <AccountHome user={user} refresh={refresh} /> : <AccountForm key={route} route={route} token={token} />}</Frame>;
 }
 

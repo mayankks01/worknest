@@ -52,14 +52,14 @@ def endpoint(method, fields=(), scope=None):
     def decorate(view):
         @wraps(view)
         @sensitive_post_parameters()
-        def wrapped(request):
-            if request.method != method:
+        def wrapped(request, *args, **kwargs):
+            if request.method not in method.split(", "):
                 response = error(request, "METHOD_NOT_ALLOWED", "Method not allowed.", 405)
                 response["Allow"] = method
                 return response
             try:
                 data = {}
-                if method == "POST":
+                if request.method in ("POST", "PATCH"):
                     if request.content_type != "application/json":
                         return error(request, "UNSUPPORTED_MEDIA_TYPE", "Send a JSON body.", 415)
                     data = json.loads(request.body)
@@ -76,7 +76,7 @@ def endpoint(method, fields=(), scope=None):
                             )
                             response["Retry-After"] = str(wait)
                             return response
-                return view(request, data)
+                return view(request, data, *args, **kwargs)
             except (json.JSONDecodeError, UnicodeDecodeError):
                 return error(request, "VALIDATION_ERROR", "Send a valid JSON object.")
             except RequestDataTooBig:

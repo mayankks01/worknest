@@ -4,7 +4,7 @@ export class ApiError extends Error {
   constructor(message: string, public details: Record<string, string[]> = {}, public status = 0) { super(message); }
 }
 
-async function decode(response: Response) {
+export async function decode(response: Response) {
   let result;
   try { result = await response.json(); } catch { throw new ApiError('WorkNest is unavailable. Please try again shortly.'); }
   if (!response.ok) {
