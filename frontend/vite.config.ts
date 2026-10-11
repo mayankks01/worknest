@@ -9,7 +9,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: process.env.API_PROXY_TARGET ?? 'http://127.0.0.1:8000',
-        changeOrigin: true,
+        changeOrigin: false, // Preserve the browser's same-origin Host for Django CSRF.
       },
     },
   },

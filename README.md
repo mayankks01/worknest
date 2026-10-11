@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 2 foundation plus the requested UI template update.** A frontend-only dashboard, organization directory, project table, task list, and board follow the user's supplied mockup. They use explicitly labeled sample data and temporary browser state. The Django health API, local services, and initial CI remain in place. Authentication, persisted organizations/tasks, RLS policies, and business workflows remain reserved for later approved stages. This is not ready for a public deployment.
+**Current scope: Step 3 accounts, plus the foundation and dashboard design preview.** Registration, email verification, login/logout, password reset, protected sessions, rate limits, and account screens are implemented. Organizations, tenant isolation, and persisted project/task workflows remain later stages. This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 
@@ -18,9 +18,9 @@ docker compose ps
 
 On macOS/Linux use `cp .env.example .env` for the first command. Keep an existing `.env` when returning to the project.
 
-Open the app at http://localhost:5173. The frontend proxies `/api` to Django so the browser uses one origin. The current UI preview runs without a backend connection and makes no business API calls; its sample profile is not a signed-in session. Health endpoints remain available separately. See `docs/UI-DESIGN.md` for the visual baseline and preview boundaries.
+Open the app at http://localhost:5173. The frontend proxies `/api` to Django on the same origin. Create an account, then open http://localhost:8025 to find its verification email in Mailpit. Local emails are captured here instead of being sent externally. Set `PUBLIC_APP_URL` in `.env` to the exact frontend origin, then recreate web/worker/beat if it changes. Account details and tests are documented in `docs/ACCOUNTS.md`.
 
-For a frontend-only preview, run `npm ci` and `npm run dev` in `frontend/`. No database or Docker startup is needed for this design preview. Search, switch organizations, open a project, and use Board/List to review the template. Refresh or use Reset preview to restore the sample data.
+The sample dashboard remains at `/preview` and runs without a backend. Account screens at `/` require the API and local services. For native frontend development, run `npm ci` and `npm run dev` in `frontend/`; use `npm run dev -- --port 5174` when needed and match `PUBLIC_APP_URL` to that port. Search, switch example organizations, or open a Board/List inside the design preview; these records still reset on refresh.
 
 | Service | Address / purpose |
 | --- | --- |
@@ -44,7 +44,7 @@ Use Python 3.12 and Node 22.16 or newer compatible Node LTS. Docker remains the 
 Copy-Item .env.example .env
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt
-docker compose up -d db redis mailpit storage-init
+docker compose up -d db redis mailpit storage-init worker beat
 docker compose run --rm migrate
 .\scripts\run-backend.ps1 -Python .\.venv\Scripts\python.exe
 ```
@@ -59,7 +59,7 @@ npm run dev
 
 The PowerShell helper loads `.env` without evaluating it as code. Containers receive the same configuration through Compose. For other shells, export the environment variables from `.env` before running `python backend/manage.py runserver`.
 
-If infrastructure is unavailable, `manage.py check` and the isolated tests below still run. The readiness endpoint correctly returns 503; those tests are not proof of a working database, worker, or object store. Django's normal development server requires database access for its startup migration check.
+Account tests now require PostgreSQL and Redis. Dependency-free health tests can still run separately. The readiness endpoint returns 503 when its required services are unavailable.
 
 ## Checks
 
@@ -72,21 +72,22 @@ cd backend
 ..\.venv\Scripts\python.exe manage.py check
 ..\.venv\Scripts\python.exe -m ruff check .
 ..\.venv\Scripts\python.exe -m ruff format --check .
-..\.venv\Scripts\python.exe -m pytest -q
+# Run the database-backed account tests using the test-only environment in docs/ACCOUNTS.md.
 cd ../frontend
 npm run build
 ```
 
-The health tests verify dependency-free liveness, readiness success/failure, redaction of dependency errors, request IDs, and HTTP method restrictions. They deliberately mock dependencies. Live integration checks belong to the separate CI job, which starts PostgreSQL/Redis and validates API readiness, migrations, frontend proxying, and the application database role.
+The suite covers health checks plus registration, verification, recovery, CSRF, session rotation/expiry/revocation, token races, atomic Redis limits, and email retries. CI uses disposable PostgreSQL/Redis services. A separate local HTTP smoke check exercises real Celery delivery to Mailpit; see `docs/ACCOUNTS.md`.
 
-CI is defined in `.github/workflows/ci.yml`. It runs only after this repository is connected to GitHub; a saved workflow is not evidence of a successful hosted run. See `docs/STEP-2-VERIFICATION.md` for the actual local results and limitations.
+CI is defined in `.github/workflows/ci.yml`. See `docs/STEP-3-VERIFICATION.md` for the actual local results; saving a workflow does not prove a hosted run passed.
 
 ## Structure and boundaries
 
 ```text
 backend/config/       Django configuration, routes, WSGI, Celery
 backend/foundation/   Health endpoints and request IDs
-backend/tests/        Foundation checks
+backend/accounts/     Global identities, account tokens, email jobs and API
+backend/tests/        Foundation and account checks
 frontend/src/         React/TypeScript UI preview, components, and sample fixtures
 infra/postgres/       Initial database roles and grants
 scripts/              Local startup helper
@@ -96,10 +97,10 @@ docs/                 Architecture and stage verification
 
 Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. No tenant tables exist yet, so there are no RLS policies to test at this stage. Tenant transactions and forced RLS arrive in Step 4 and must be implemented on each tenant table as it is introduced.
 
-Auth applications are deliberately not installed before defining the custom user model in Step 3, avoiding a premature default-user database migration. The only initial Django migration is for content types.
+Step 3 defines the custom user before installing Django authentication, avoiding a premature default-user migration. The original content-type-only foundation has now been migrated to the custom user and session schema.
 
 The dependency versions are exact in Python requirements and the npm lockfile. PostgreSQL and Redis use verified immutable image digests; the other container images use explicit release tags. Use scanned immutable image digests for every image before pilot deployment. Google Fonts enhance the preview typography, with system font fallbacks if offline.
 
 ## Next checkpoint
 
-After reviewing Step 2, authorize **Step 3: accounts and authentication** to implement registration, verified email, login/logout, password reset, secure sessions, and their screens. Do not start another stage without the user's approval.
+After reviewing Step 3, authorize **Step 4: organizations and tenant isolation**. Do not start another stage without the user's approval.

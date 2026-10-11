@@ -84,6 +84,13 @@ services:
     depends_on:
       web: {condition: service_healthy}
 
+  beat:
+    <<: *backend
+    command: ["celery", "-A", "config", "beat", "--loglevel=INFO", "--schedule=/tmp/celerybeat-schedule"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+
   mailpit:
     image: axllent/mailpit:v1.27.8
     ports: ["127.0.0.1:1025:1025", "127.0.0.1:8025:8025"]

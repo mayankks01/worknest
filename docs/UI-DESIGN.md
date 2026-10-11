@@ -30,4 +30,4 @@ The example timeline is 20 April 2025. Statistics and progress derive from the f
 
 ## Next stages
 
-Step 3 remains pending approval. Registration, email verification, login/logout, and recovery screens should use this same palette and typography. Connect the organization, project, task, and activity views to authenticated server data only in their corresponding approved stages. Remove preview fixtures from the authenticated production path when those features are implemented.
+Step 3 account screens now use this palette and typography. The sample dashboard is separately available at `/preview`; `/` shows real account status. Step 4 remains pending approval. Connect organization, project, task, and activity views to authenticated server data only in their corresponding approved stages. Keep preview fixtures outside the authenticated production path.
