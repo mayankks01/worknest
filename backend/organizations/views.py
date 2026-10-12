@@ -5,6 +5,7 @@ import uuid
 from datetime import timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from django.conf import settings
 from django.core import signing
 from django.db import IntegrityError, transaction
 from django.http import JsonResponse
@@ -14,7 +15,14 @@ from accounts.models import User
 from accounts.views import InputError, endpoint, error
 
 from .context import tenant_transaction
-from .models import AuditEvent, CreationRequest, Membership, Organization, OutboxEvent
+from .models import (
+    AuditEvent,
+    CreationRequest,
+    Membership,
+    Organization,
+    OrganizationUsage,
+    OutboxEvent,
+)
 
 FIELDS = ("display_name", "slug", "timezone")
 
@@ -166,6 +174,9 @@ def collection(request, data):
             )
             member = Membership.objects.create(
                 id=member_id, org=org, user=request.user, role="Owner"
+            )
+            OrganizationUsage.objects.create(
+                org=org, member_limit=settings.ORGANIZATION_MEMBER_LIMIT
             )
             record(org, member, "organization.created", values)
             response = {"organization": serialize(org, member)}

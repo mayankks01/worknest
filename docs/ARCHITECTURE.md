@@ -10,3 +10,5 @@
 - The React UI follows the user-supplied navy/blue mockup. Account screens call the same-origin API. Dashboard fixtures remain isolated at `/preview`; they never represent authenticated organization data. See `UI-DESIGN.md` for the visual reference.
 - This Compose file is a local development configuration. It is not a production deployment or security baseline. External provider credentials, hosting region, scanning service, and operating budget remain future decisions.
 - Local object storage uses RustFS 1.0.1, following its official Docker configuration: https://docs.rustfs.com/en/installation/container/docker/. The S3 bootstrap uses boto3 and rejects unexpected bucket policies. The pilot provider is still undecided.
+
+- Step 5 adds invitations, per-organization member usage, scoped retry records, live team authorization and transactional ownership transfer. Invitation email uses leased outbox jobs with beat recovery and bounded retries. Narrow fixed-search-path database helpers support forced RLS without recursive policy queries. See `TEAM.md`.

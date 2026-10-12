@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 4 organizations and tenant isolation, plus accounts and the design preview.** Verified users can create private organizations, switch workspaces, and update permitted settings. Creation is atomic and idempotent; PostgreSQL forces tenant isolation and Owner constraints. Team invitations and persisted project/task workflows remain later stages. This is a local development build, not a public deployment.
+**Current scope: Step 5 team administration, plus organizations, accounts and the design preview.** Teams can invite verified users, manage roles, remove members and transfer ownership with password confirmation. Invitations use durable email delivery and enforce the member quota. See [team administration](docs/TEAM.md) and [Step 5 verification](docs/STEP-5-VERIFICATION.md). Persisted projects/tasks remain Step 6. This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 

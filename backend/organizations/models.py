@@ -86,6 +86,9 @@ class OutboxEvent(models.Model):
     payload = models.JSONField(default=dict)
     created_at = models.DateTimeField(default=django_timezone.now)
     dispatched_at = models.DateTimeField(null=True)
+    delivery_state = models.CharField(max_length=10, default="queued")
+    attempts = models.PositiveSmallIntegerField(default=0)
+    next_attempt_at = models.DateTimeField(default=django_timezone.now, db_index=True)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["org", "id"], name="outbox_org_id")]
@@ -104,4 +107,73 @@ class CreationRequest(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["actor", "key"], name="org_create_actor_key")
+        ]
+
+
+class OrganizationUsage(models.Model):
+    org = models.OneToOneField(Organization, primary_key=True, on_delete=models.PROTECT)
+    active_members = models.PositiveIntegerField(default=1)
+    member_limit = models.PositiveIntegerField(default=30)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(
+                    active_members__gte=1, active_members__lte=models.F("member_limit")
+                ),
+                name="usage_member_capacity",
+            ),
+        ]
+
+
+class Invitation(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    org = models.ForeignKey(Organization, on_delete=models.PROTECT)
+    email = models.EmailField(max_length=254)
+    role = models.CharField(max_length=10)
+    state = models.CharField(max_length=10, default="pending")
+    token_hash = models.CharField(max_length=64)
+    token_version = models.PositiveIntegerField(default=1)
+    expires_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=django_timezone.now)
+    created_by_membership_id = models.UUIDField()
+    email_event_id = models.UUIDField(null=True)
+    accepted_at = models.DateTimeField(null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["org", "id"], name="invitation_org_id"),
+            models.UniqueConstraint(
+                fields=["org", "email"],
+                condition=models.Q(state="pending"),
+                name="invitation_one_pending",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(role__in=["Admin", "Member", "Viewer"]),
+                name="invitation_non_owner_role",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(state__in=["pending", "accepted", "revoked", "expired"]),
+                name="invitation_valid_state",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(email=models.functions.Lower(models.functions.Trim("email"))),
+                name="invitation_normalized_email",
+            ),
+        ]
+
+
+class TeamRequest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    org = models.ForeignKey(Organization, on_delete=models.PROTECT)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    key = models.CharField(max_length=128)
+    payload_hash = models.CharField(max_length=64)
+    response = models.JSONField()
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["org", "id"], name="team_request_org_id"),
+            models.UniqueConstraint(fields=["org", "actor", "key"], name="team_request_key"),
         ]

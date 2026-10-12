@@ -18,7 +18,7 @@ with connection.cursor() as cursor:
         "WHERE n.nspname = 'public' AND c.relname LIKE 'organizations_%' AND c.relkind = 'r'"
     )
     tables = cursor.fetchall()
-    assert len(tables) == 5, "Expected all five organization foundation tables"
+    assert len(tables) == 8, "Expected all eight organization and team tables"
     for name, enabled, forced, owned in tables:
         assert enabled and forced and not owned, f"Unsafe table policy/ownership: {name}"
         # Names come only from the catalog and are quoted by the backend.
@@ -28,5 +28,5 @@ with connection.cursor() as cursor:
         assert not cursor.fetchone()[0], f"Runtime role must not truncate {name}"
 print(
     "PASS: actual runtime role is non-owner, non-superuser, NOBYPASSRLS; "
-    "all five tables force RLS, deny TRUNCATE and fail closed without context."
+    "all eight tables force RLS, deny TRUNCATE and fail closed without context."
 )

@@ -4,7 +4,9 @@ from django.db import connection, transaction
 
 
 @contextmanager
-def tenant_transaction(actor_id, org_id=None, *, discovery=False):
+def tenant_transaction(
+    actor_id, org_id=None, *, discovery=False, invitation_hash="", email_event=""
+):
     """Only trusted server identities/URL IDs enter here, never body-supplied context.
 
     set_config(..., true) is parameterized SET LOCAL. Explicitly restore the prior
@@ -12,9 +14,11 @@ def tenant_transaction(actor_id, org_id=None, *, discovery=False):
     Workers must enter this boundary explicitly, just like HTTP requests.
     """
     values = {
-        "worknest.actor_id": str(actor_id),
+        "worknest.actor_id": str(actor_id) if actor_id else "",
         "worknest.org_id": str(org_id) if org_id else "",
         "worknest.discovery": "on" if discovery else "off",
+        "worknest.invitation_hash": invitation_hash,
+        "worknest.email_event": str(email_event) if email_event else "",
     }
     with transaction.atomic():
         previous = {}

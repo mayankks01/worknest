@@ -71,6 +71,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 PASSWORD_RESET_TIMEOUT = 1800
 ACCOUNT_VERIFY_TIMEOUT = 86400
+ORGANIZATION_MEMBER_LIMIT = int(os.environ.get("ORGANIZATION_MEMBER_LIMIT", "30"))
 PUBLIC_APP_URL = os.environ.get("PUBLIC_APP_URL", "http://localhost:5173").rstrip("/")
 DATA_UPLOAD_MAX_MEMORY_SIZE = 16384
 AUTH_RATE_LIMITS = {
@@ -79,6 +80,8 @@ AUTH_RATE_LIMITS = {
     "reset": (10, 3, 3600),
     "resend": (10, 3, 3600),
     "consume": (30, 30, 900),
+    "invitation": (100, 30, 3600),
+    "reauth": (20, 8, 900),
 }
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_SSL_REDIRECT = not DEBUG
@@ -100,6 +103,7 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BROKER_CONNECTION_TIMEOUT = 3
 CELERY_TIMEZONE = "UTC"
 CELERY_BEAT_SCHEDULE = {
+    "recover-invitation-emails": {"task": "organizations.dispatch_invitations", "schedule": 30.0},
     "recover-account-emails": {"task": "accounts.dispatch_emails", "schedule": 30.0},
 }
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
