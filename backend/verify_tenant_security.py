@@ -15,10 +15,12 @@ with connection.cursor() as cursor:
         "SELECT c.relname, c.relrowsecurity, c.relforcerowsecurity, "
         "pg_get_userbyid(c.relowner) = current_user "
         "FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
-        "WHERE n.nspname = 'public' AND c.relname LIKE 'organizations_%' AND c.relkind = 'r'"
+        "WHERE n.nspname = 'public' AND "
+        "(c.relname LIKE 'organizations_%' OR c.relname LIKE 'projects_%') "
+        "AND c.relkind = 'r'"
     )
     tables = cursor.fetchall()
-    assert len(tables) == 8, "Expected all eight organization and team tables"
+    assert len(tables) == 12, "Expected all twelve organization, team and project tables"
     for name, enabled, forced, owned in tables:
         assert enabled and forced and not owned, f"Unsafe table policy/ownership: {name}"
         # Names come only from the catalog and are quoted by the backend.
@@ -28,5 +30,5 @@ with connection.cursor() as cursor:
         assert not cursor.fetchone()[0], f"Runtime role must not truncate {name}"
 print(
     "PASS: actual runtime role is non-owner, non-superuser, NOBYPASSRLS; "
-    "all eight tables force RLS, deny TRUNCATE and fail closed without context."
+    "all twelve tables force RLS, deny TRUNCATE and fail closed without context."
 )

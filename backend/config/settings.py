@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "accounts",
     "organizations",
+    "projects",
 ]
 AUTH_USER_MODEL = "accounts.User"
 MIDDLEWARE = [
@@ -71,9 +72,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 PASSWORD_RESET_TIMEOUT = 1800
 ACCOUNT_VERIFY_TIMEOUT = 86400
+ORGANIZATION_PROJECT_LIMIT = int(os.environ.get("ORGANIZATION_PROJECT_LIMIT", "20"))
+ORGANIZATION_TASK_LIMIT = int(os.environ.get("ORGANIZATION_TASK_LIMIT", "10000"))
 ORGANIZATION_MEMBER_LIMIT = int(os.environ.get("ORGANIZATION_MEMBER_LIMIT", "30"))
 PUBLIC_APP_URL = os.environ.get("PUBLIC_APP_URL", "http://localhost:5173").rstrip("/")
-DATA_UPLOAD_MAX_MEMORY_SIZE = 16384
+DATA_UPLOAD_MAX_MEMORY_SIZE = 131072
 AUTH_RATE_LIMITS = {
     "login": (30, 10, 900),
     "register": (10, 5, 3600),

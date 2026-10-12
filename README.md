@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 5 team administration, plus organizations, accounts and the design preview.** Teams can invite verified users, manage roles, remove members and transfer ownership with password confirmation. Invitations use durable email delivery and enforce the member quota. See [team administration](docs/TEAM.md) and [Step 5 verification](docs/STEP-5-VERIFICATION.md). Persisted projects/tasks remain Step 6. This is a local development build, not a public deployment.
+**Current scope: Step 6 projects and tasks, plus team administration, organizations and accounts.** Teams can manage private project memberships, archive/restore projects, and plan work in persisted board/list views with assignees, due dates, filters and conflict-safe edits. The organization overview shows real scoped counts and tasks. See [projects and tasks](docs/PROJECTS.md) and [Step 6 verification](docs/STEP-6-VERIFICATION.md). This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 
@@ -88,15 +88,16 @@ backend/config/       Django configuration, routes, WSGI, Celery
 backend/foundation/   Health endpoints and request IDs
 backend/accounts/     Global identities, account tokens, email jobs and API
 backend/organizations/ Organizations, memberships, tenant context, RLS, audit/outbox capture
-backend/tests/        Foundation, account and adversarial tenant checks
-frontend/src/         Account/organization UI, plus isolated preview components and fixtures
+backend/projects/     Private projects, memberships, versioned tasks and project policy
+backend/tests/        Foundation, account, team, project and adversarial tenant checks
+frontend/src/         Account, organization, team and project UI, plus isolated preview fixtures
 infra/postgres/       Initial database roles and grants
 scripts/              Local startup helper
 docs/                 Architecture and stage verification
 .github/workflows/    Backend, frontend, and integration checks
 ```
 
-Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. All organization foundation tables now have forced RLS. New tenant tables must receive transaction scoping, policies, relationship constraints, and isolation tests when introduced.
+Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. All twelve organization/team/project tenant tables have forced RLS. New tenant tables must receive transaction scoping, policies, relationship constraints, and isolation tests when introduced.
 
 Step 3 defines the custom user before installing Django authentication, avoiding a premature default-user migration. The original content-type-only foundation has now been migrated to the custom user and session schema.
 
@@ -104,4 +105,4 @@ The dependency versions are exact in Python requirements and the npm lockfile. P
 
 ## Next checkpoint
 
-After reviewing Step 4, authorize **Step 5: team administration** (invitations, members, roles, ownership transfer, and member limits). Do not start another stage without the user's approval. Completed steps are committed and pushed to GitHub before asking to proceed.
+After reviewing Step 6, authorize **Step 7: comments and attachments** (discussions, private uploads, quarantine, scanning and downloads). Do not start another stage without the user's approval. Completed steps are committed and pushed to GitHub before asking to proceed.

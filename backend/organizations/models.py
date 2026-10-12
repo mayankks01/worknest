@@ -114,6 +114,10 @@ class OrganizationUsage(models.Model):
     org = models.OneToOneField(Organization, primary_key=True, on_delete=models.PROTECT)
     active_members = models.PositiveIntegerField(default=1)
     member_limit = models.PositiveIntegerField(default=30)
+    active_projects = models.PositiveIntegerField(default=0)
+    project_limit = models.PositiveIntegerField(default=20)
+    active_tasks = models.PositiveIntegerField(default=0)
+    task_limit = models.PositiveIntegerField(default=10000)
 
     class Meta:
         constraints = [
@@ -122,6 +126,14 @@ class OrganizationUsage(models.Model):
                     active_members__gte=1, active_members__lte=models.F("member_limit")
                 ),
                 name="usage_member_capacity",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(active_projects__lte=models.F("project_limit")),
+                name="usage_project_capacity",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(active_tasks__lte=models.F("task_limit")),
+                name="usage_task_capacity",
             ),
         ]
 

@@ -1,15 +1,16 @@
 export type Account = { id: string; email: string; display_name: string; verified_at: string | null };
 export type Session = { user: Account | null; csrf_token: string };
 export class ApiError extends Error {
-  constructor(message: string, public details: Record<string, string[]> = {}, public status = 0) { super(message); }
+  constructor(message: string, public details: Record<string, string[]> = {}, public status = 0, public currentVersion?: number) { super(message); }
 }
 
 export async function decode(response: Response) {
+  if (response.status === 204) return {};
   let result;
   try { result = await response.json(); } catch { throw new ApiError('WorkNest is unavailable. Please try again shortly.'); }
   if (!response.ok) {
     const wait = response.headers.get('Retry-After');
-    throw new ApiError(`${result.error?.message ?? 'Something went wrong.'}${response.status === 429 && wait ? ` Try again in ${Math.ceil(Number(wait) / 60)} minute(s).` : ''}`, result.error?.details, response.status);
+    throw new ApiError(`${result.error?.message ?? 'Something went wrong.'}${response.status === 429 && wait ? ` Try again in ${Math.ceil(Number(wait) / 60)} minute(s).` : ''}`, result.error?.details, response.status, result.error?.details?.current_version);
   }
   return result;
 }

@@ -233,6 +233,10 @@ def member_detail(request, data, org_id, member_id):
             role = role_input(data)
             can_manage(actor, role)
             if role != member.role:
+                if role == "Viewer":
+                    from projects.services import clear_assignments
+
+                    clear_assignments(org, actor, member, remove_access=False)
                 previous = member.role
                 member.role = role
                 member.save(update_fields=["role"])
@@ -245,6 +249,9 @@ def member_detail(request, data, org_id, member_id):
                 )
             return JsonResponse({"member": member_data(member)})
         event(org, actor, "membership.removed", member.id, {"role": member.role})
+        from projects.services import clear_assignments
+
+        clear_assignments(org, actor, member)
         member.state = "removed"
         member.save(update_fields=["state"])
         usage = OrganizationUsage.objects.get(org_id=org_id)

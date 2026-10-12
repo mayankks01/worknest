@@ -6,7 +6,7 @@ export type Organization = {
 };
 export type OrganizationPage = { results: Organization[]; next_cursor: string | null };
 
-export async function orgRequest(path = '', method = 'GET', data?: Record<string, string>, key?: string) {
+export async function orgRequest(path = '', method = 'GET', data?: Record<string, unknown>, key?: string) {
   try {
     const headers: Record<string, string> = {};
     if (method !== 'GET') {

@@ -176,7 +176,10 @@ def collection(request, data):
                 id=member_id, org=org, user=request.user, role="Owner"
             )
             OrganizationUsage.objects.create(
-                org=org, member_limit=settings.ORGANIZATION_MEMBER_LIMIT
+                org=org,
+                member_limit=settings.ORGANIZATION_MEMBER_LIMIT,
+                project_limit=settings.ORGANIZATION_PROJECT_LIMIT,
+                task_limit=settings.ORGANIZATION_TASK_LIMIT,
             )
             record(org, member, "organization.created", values)
             response = {"organization": serialize(org, member)}

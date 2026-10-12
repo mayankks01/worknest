@@ -48,7 +48,7 @@ def csrf_failure(request, reason=""):
     return error(request, "CSRF_FAILED", "Your security token expired. Refresh and try again.", 403)
 
 
-def endpoint(method, fields=(), scope=None):
+def endpoint(method, fields=(), scope=None, *, text_only=True):
     def decorate(view):
         @wraps(view)
         @sensitive_post_parameters()
@@ -59,13 +59,15 @@ def endpoint(method, fields=(), scope=None):
                 return response
             try:
                 data = {}
-                if request.method in ("POST", "PATCH"):
+                if request.method in ("POST", "PATCH") or (
+                    not text_only and request.method == "DELETE"
+                ):
                     if request.content_type != "application/json":
                         return error(request, "UNSUPPORTED_MEDIA_TYPE", "Send a JSON body.", 415)
                     data = json.loads(request.body)
                     if not isinstance(data, dict) or any(key not in fields for key in data):
                         raise InputError({"body": ["Unexpected fields or invalid JSON object."]})
-                    if any(not isinstance(value, str) for value in data.values()):
+                    if text_only and any(not isinstance(value, str) for value in data.values()):
                         raise InputError({"body": ["All fields must be text."]})
                     if scope:
                         email = normalize_email(data.get("email", ""))[:254]

@@ -14,7 +14,7 @@ Verified members can view the paginated roster at `/orgs/:id/members`. Owners an
 
 Every mutation rechecks live membership after taking the organization usage lock. Removal ends access on the next request and preserves sessions for other organizations. Ownership transfer locks the organization and relevant memberships; the old Owner becomes Admin. A deferred composite foreign key and partial unique index enforce exactly one active Owner at commit.
 
-Project membership and task-assignee cleanup must be added to the same offboarding transaction in Step 6, when those tables exist. No project/task data is persisted at this stage.
+Step 6 now removes project memberships and clears open-task assignees in the same offboarding transaction, including archived projects. Each affected task receives a new version; completed tasks retain historical attribution. A role change to Viewer clears open assignments while keeping read access. See [projects and tasks](PROJECTS.md).
 
 ## Invitations
 

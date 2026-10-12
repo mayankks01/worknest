@@ -12,3 +12,5 @@
 - Local object storage uses RustFS 1.0.1, following its official Docker configuration: https://docs.rustfs.com/en/installation/container/docker/. The S3 bootstrap uses boto3 and rejects unexpected bucket policies. The pilot provider is still undecided.
 
 - Step 5 adds invitations, per-organization member usage, scoped retry records, live team authorization and transactional ownership transfer. Invitation email uses leased outbox jobs with beat recovery and bounded retries. Narrow fixed-search-path database helpers support forced RLS without recursive policy queries. See `TEAM.md`.
+
+- Step 6 adds private projects, explicit project memberships, versioned task CRUD, quota accounting and offboarding cleanup. Four new tables force organization-level RLS with composite relationship constraints. Shared service policies enforce project visibility; the usage row serializes capacity/access changes, while task versions prevent lost updates. Board/list views and the scoped dashboard use real API data. See `PROJECTS.md`.
