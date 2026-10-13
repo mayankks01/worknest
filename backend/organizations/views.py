@@ -182,6 +182,9 @@ def collection(request, data):
                 task_limit=settings.ORGANIZATION_TASK_LIMIT,
                 storage_limit=settings.ORGANIZATION_STORAGE_LIMIT,
             )
+            from activity.models import Reconciliation
+
+            Reconciliation.objects.create(org=org)
             record(org, member, "organization.created", values)
             response = {"organization": serialize(org, member)}
             CreationRequest.objects.create(

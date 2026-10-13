@@ -86,6 +86,8 @@ class OutboxEvent(models.Model):
     payload = models.JSONField(default=dict)
     created_at = models.DateTimeField(default=django_timezone.now)
     dispatched_at = models.DateTimeField(null=True)
+    lease = models.UUIDField(null=True)
+    last_error = models.CharField(max_length=40, default="")
     delivery_state = models.CharField(max_length=10, default="queued")
     attempts = models.PositiveSmallIntegerField(default=0)
     next_attempt_at = models.DateTimeField(default=django_timezone.now, db_index=True)

@@ -11,6 +11,7 @@ from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 
 from accounts.views import InputError, endpoint, error
+from activity.services import notification_payload
 from organizations.context import tenant_transaction
 from organizations.models import Membership, OrganizationUsage
 from organizations.team import TeamError, actor_for, event, member_data, page
@@ -386,7 +387,14 @@ def tasks(request, data, org, actor, project_id):
         task = Task.objects.create(org=org, project=project, created_by_id=actor.id, **values)
         usage.active_tasks += 1
         usage.save(update_fields=["active_tasks"])
-        event(org, actor, "task.created", task.id, {"project_id": str(project.id)})
+        event(
+            org,
+            actor,
+            "task.created",
+            task.id,
+            {"project_id": str(project.id)},
+            payload=notification_payload(task, actor, "assignment") if task.assignee_id else None,
+        )
         return {"task": task_data(task, today, True)}
 
     return idempotent(request, data, org, f"{project.id}:tasks", create)
@@ -449,6 +457,11 @@ def task_detail(request, data, org, actor, task_id):
             "version": version + 1,
             "project_id": str(project.id),
         },
+        payload=notification_payload(task, actor, "assignment", values["assignee_id"])
+        if request.method == "PATCH"
+        and values.get("assignee_id")
+        and values["assignee_id"] != task.assignee_id
+        else None,
     )
     if request.method == "DELETE":
         usage = OrganizationUsage.objects.get(org=org)

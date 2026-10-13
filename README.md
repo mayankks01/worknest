@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 7 comments and private attachments, plus projects/tasks, teams, organizations and accounts.** Task discussions support plain-text comments and private files with content validation, real ClamAV scanning, authorized downloads and storage quota cleanup. See [collaboration](docs/COLLABORATION.md) and [Step 7 verification](docs/STEP-7-VERIFICATION.md). This is a local development build, not a public deployment.
+**Current scope: Step 8 notifications and reliability, plus comments/files, projects/tasks, teams, organizations and accounts.** Members have an assignment/comment inbox and organization-specific assignment email preferences. Owners/Admins can review audit history and retry failed delivery or cleanup jobs. Durable workers recover missed events and reconcile storage/quota usage. See [notifications](docs/NOTIFICATIONS.md) and [Step 8 verification](docs/STEP-8-VERIFICATION.md). This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 

@@ -103,6 +103,10 @@ def event(org, actor, action, resource_id, summary, *, email=False, payload=None
     )
     if email:
         transaction.on_commit(lambda: publish_email(str(org.id), str(outbox.id)))
+    elif payload and payload.get("kind") in {"assignment", "comment"}:
+        from activity.tasks import publish
+
+        transaction.on_commit(lambda: publish("event", org.id, outbox.id))
     return outbox
 
 

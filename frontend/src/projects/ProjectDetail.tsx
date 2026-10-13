@@ -17,7 +17,7 @@ export default function ProjectDetail({ orgId, projectId }: { orgId: string; pro
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [revision, setRevision] = useState(0);
-  const [editor, setEditor] = useState<{ taskId?: string; initialStatus?: string } | null>(null);
+  const [editor, setEditor] = useState<{ taskId?: string; initialStatus?: string } | null>(() => { const taskId = new URLSearchParams(location.search).get('task'); return taskId && /^[0-9a-f-]{36}$/.test(taskId) ? { taskId } : null; });
   const dragging = useRef<string | null>(null);
   const moving = useRef(false);
   const root = `${orgId}/projects/${projectId}/`;

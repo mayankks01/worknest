@@ -3,6 +3,7 @@ from django.urls import include, path
 from . import team, views
 
 urlpatterns = [
+    path("<uuid:org_id>/", include("activity.urls")),
     path("<uuid:org_id>/", include("collab.urls")),
     path("<uuid:org_id>/", include("projects.urls")),
     path("", views.collection),

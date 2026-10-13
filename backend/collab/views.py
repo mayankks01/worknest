@@ -9,6 +9,7 @@ from django.http import FileResponse, HttpResponse, JsonResponse
 from django.utils import timezone
 
 from accounts.views import InputError, endpoint, error
+from activity.services import notification_payload
 from organizations.context import tenant_transaction
 from organizations.models import OrganizationUsage
 from organizations.team import TeamError, actor_for, event
@@ -56,7 +57,14 @@ def comments(request, data, org, actor, task_id):
 
     def create():
         item = Comment.objects.create(org=org, task=task, author=actor, body=body)
-        event(org, actor, "comment.created", item.id, {"task_id": str(task.id)})
+        event(
+            org,
+            actor,
+            "comment.created",
+            item.id,
+            {"task_id": str(task.id)},
+            payload={**notification_payload(task, actor, "comment"), "resource_id": str(item.id)},
+        )
         return {"comment": comment_data(item, actor, project)}
 
     return idempotent(request, data, org, f"{task.id}:comments", create)

@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "organizations",
     "projects",
     "collab",
+    "activity",
 ]
 AUTH_USER_MODEL = "accounts.User"
 MIDDLEWARE = [
@@ -108,6 +109,7 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BROKER_CONNECTION_TIMEOUT = 3
 CELERY_TIMEZONE = "UTC"
 CELERY_BEAT_SCHEDULE = {
+    "recover-activity-jobs": {"task": "activity.dispatch", "schedule": 15.0},
     "recover-file-jobs": {"task": "collab.dispatch_files", "schedule": 15.0},
     "recover-invitation-emails": {"task": "organizations.dispatch_invitations", "schedule": 30.0},
     "recover-account-emails": {"task": "accounts.dispatch_emails", "schedule": 30.0},
