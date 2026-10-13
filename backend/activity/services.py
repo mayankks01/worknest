@@ -41,7 +41,7 @@ def eligible_task(org_id, member, task_id):
         or not member.user.verified_at
     ):
         return None
-    if not Organization.objects.filter(pk=org_id, state="active").exists():
+    if not Organization.objects.filter(Organization.live_filter(), pk=org_id).exists():
         return None
     return Task.objects.filter(
         org_id=org_id,

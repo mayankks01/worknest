@@ -27,7 +27,7 @@ Every five minutes, a durable organization job compares usage counters with acti
 
 Object cleanup considers only canonical attachment UUID keys under the exact organization prefix, older than 24 hours. It deletes missing-row objects or terminal file objects with no reservation or pending cleanup. Active/quarantined files and reserved space remain protected. S3 and SMTP operations run outside business database transactions. Counter corrections may commit even if the later storage check fails; the success timestamp updates only after the storage page completes.
 
-All 17 tenant tables force RLS. The new tables have organization-local relationship constraints. Background contexts are anchored to an existing job and exact organization; routing helpers expose IDs only. Audit views are Owner/Admin-only and have no edit/delete endpoint; the runtime database role cannot update or delete audit rows.
+Step 8 introduced 17 tenant tables with forced RLS (19 after Step 9). The new tables have organization-local relationship constraints. Background contexts are anchored to an existing job and exact organization; routing helpers expose IDs only. Audit views are Owner/Admin-only and have no edit/delete endpoint; ordinary actor contexts cannot update or delete audit rows. Step 9 grants only exact maintenance-job contexts deletion access for retention and organization purge.
 
 ## API
 
@@ -48,4 +48,4 @@ Audit and inbox cursors are signed and scoped to the actor and organization. Acc
 
 Run `python backend/verify_activity.py --base-url http://localhost:5173 --pause-worker` with Compose services available. It creates disposable local accounts, pauses/restarts the worker, verifies committed work and recovery, and checks Mailpit delivery. Local mail stays in Mailpit; external provider delivery is not claimed. CI runs this workflow after collaboration verification.
 
-Search, exports, deletion workflows, 90-day audit retention and 30-day notification retention belong to Step 9. Production hosting, external email/storage configuration and release readiness remain future stages.
+Search, exports, deletion workflows, 90-day audit retention and 30-day notification retention are implemented in Step 9; see `LIFECYCLE.md`. Production hosting, external email/storage configuration and release readiness remain future stages.

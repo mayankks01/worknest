@@ -82,7 +82,8 @@ jobs:
           python backend/verify_team.py --base-url http://localhost:5173
           python backend/verify_projects.py --base-url http://localhost:5173
           python backend/verify_collaboration.py --base-url http://localhost:5173
-          python backend/verify_activity.py --base-url http://localhost:5173 --pause-worker
+          python backend/verify_activity.py --base-url http://localhost:5173 --pause-worker --ui-account-file /tmp/worknest-activity.json
+          python backend/verify_lifecycle.py --base-url http://localhost:5173 --account-file /tmp/worknest-activity.json
           docker compose exec -T web python verify_tenant_security.py
       - if: failure()
         run: docker compose logs --no-color

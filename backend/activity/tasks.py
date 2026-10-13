@@ -213,7 +213,7 @@ def reconcile(org_id, job_id):
             org = Organization.objects.get(pk=org_id)
             if row.lease != lease:
                 return
-            if org.state != "active":
+            if not Organization.objects.filter(Organization.live_filter(), pk=org.id).exists():
                 row.state, row.lease = "obsolete", None
                 row.save()
                 return

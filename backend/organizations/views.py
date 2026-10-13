@@ -64,6 +64,7 @@ def serialize(org, membership):
         "slug": org.slug,
         "timezone": org.timezone,
         "state": org.state,
+        "deletion_due_at": org.deletion_due_at.isoformat() if org.deletion_due_at else None,
         "created_at": org.created_at.isoformat(),
         "membership": {"id": str(membership.id), "role": membership.role},
     }
@@ -114,7 +115,9 @@ def collection(request, data):
             raise InputError({"cursor": ["Invalid page or page size. Refresh the list."]}) from None
         with tenant_transaction(request.user.id, discovery=True):
             memberships = Membership.objects.filter(
-                user=request.user, state="active", org__state="active"
+                user=request.user,
+                state="active",
+                org_id__in=Organization.objects.filter(Organization.live_filter()).values("id"),
             )
             if after:
                 memberships = memberships.filter(org_id__gt=after)
@@ -162,7 +165,7 @@ def collection(request, data):
                     )
                 with tenant_transaction(request.user.id, previous.response["organization"]["id"]):
                     if not Organization.objects.filter(
-                        pk=previous.response["organization"]["id"], state="active"
+                        Organization.live_filter(), pk=previous.response["organization"]["id"]
                     ).exists():
                         return unavailable(request)
                 return JsonResponse(previous.response, status=201)
@@ -185,6 +188,9 @@ def collection(request, data):
             from activity.models import Reconciliation
 
             Reconciliation.objects.create(org=org)
+            from lifecycle.models import Maintenance
+
+            Maintenance.objects.create(org_id=org.id)
             record(org, member, "organization.created", values)
             response = {"organization": serialize(org, member)}
             CreationRequest.objects.create(
@@ -211,7 +217,7 @@ def detail(request, data, org_id):
         return denied
     with tenant_transaction(request.user.id, org_id):
         member = Membership.objects.filter(org_id=org_id, user=request.user, state="active").first()
-        org = Organization.objects.filter(pk=org_id, state="active").first()
+        org = Organization.objects.filter(Organization.live_filter(), pk=org_id).first()
         if not member or not org:
             return unavailable(request)
         if request.method == "PATCH":

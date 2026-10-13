@@ -44,11 +44,10 @@ def send_invitation(org_id, event_id):
         invitation = Invitation.objects.filter(
             pk=job.payload.get("invitation_id"), org_id=org_id, email_event_id=event_id
         ).first()
-        org = Organization.objects.filter(pk=org_id).first()
+        org = Organization.objects.filter(Organization.live_filter(), pk=org_id).first()
         if (
             not invitation
             or not org
-            or org.state != "active"
             or invitation.state != "pending"
             or invitation.expires_at <= now
             or invitation.token_version != job.payload.get("version")

@@ -11,12 +11,19 @@ class Organization(models.Model):
     slug = models.SlugField(max_length=63, unique=True)
     timezone = models.CharField(max_length=64, default="UTC")
     state = models.CharField(max_length=16, default="active")
+    deletion_due_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created_at = models.DateTimeField(default=django_timezone.now)
     # A deferred composite FK in 0002 guarantees a matching active Owner at commit.
     owner_membership_id = models.UUIDField()
     owner_role = models.CharField(max_length=10, default="Owner", editable=False)
     owner_state = models.CharField(max_length=10, default="active", editable=False)
+
+    @staticmethod
+    def live_filter():
+        return models.Q(state="active") | models.Q(
+            state="pending_delete", deletion_due_at__gt=django_timezone.now()
+        )
 
     class Meta:
         constraints = [

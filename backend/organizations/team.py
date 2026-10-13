@@ -53,7 +53,7 @@ def team_endpoint(methods, fields=()):
 
 
 def actor_for(request, org_id, *, manage=False, lock=False):
-    org = Organization.objects.filter(pk=org_id, state="active").first()
+    org = Organization.objects.filter(Organization.live_filter(), pk=org_id).first()
     actor = Membership.objects.filter(org_id=org_id, user=request.user, state="active").first()
     if not org or not actor:
         raise TeamError("NOT_FOUND", "This organization is unavailable.", 404)
@@ -390,7 +390,7 @@ def preview(request, data):
                 "This invitation is invalid, expired, or unavailable for this account.",
                 400,
             )
-        org = Organization.objects.filter(pk=org_id, state="active").first()
+        org = Organization.objects.filter(Organization.live_filter(), pk=org_id).first()
         if not org:
             raise TeamError("INVALID_INVITATION", "This invitation is unavailable.", 400)
         return JsonResponse(
@@ -451,7 +451,7 @@ def accept(request, data):
                 )
             usage.active_members += 1
             usage.save(update_fields=["active_members"])
-        org = Organization.objects.get(pk=org_id, state="active")
+        org = Organization.objects.get(Organization.live_filter(), pk=org_id)
         # Audit before consumption so matching-email capability is still valid.
         event(org, member, "invitation.accepted", invitation.id, {"role": member.role})
         invitation.state, invitation.accepted_at = "accepted", timezone.now()

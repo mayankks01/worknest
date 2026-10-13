@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 8 notifications and reliability, plus comments/files, projects/tasks, teams, organizations and accounts.** Members have an assignment/comment inbox and organization-specific assignment email preferences. Owners/Admins can review audit history and retry failed delivery or cleanup jobs. Durable workers recover missed events and reconcile storage/quota usage. See [notifications](docs/NOTIFICATIONS.md) and [Step 8 verification](docs/STEP-8-VERIFICATION.md). This is a local development build, not a public deployment.
+**Current scope: Step 9 search and data lifecycle, plus notifications, comments/files, projects/tasks, teams, organizations and accounts.** Search respects live project access. Owners/Admins can request private exports; Owners can schedule organization deletion with a seven-day cancellation window. Durable jobs enforce retention and cleanup. See [data lifecycle](docs/LIFECYCLE.md) and [Step 9 verification](docs/STEP-9-VERIFICATION.md). This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 

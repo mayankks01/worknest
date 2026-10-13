@@ -65,7 +65,10 @@ def authorized_upload(item):
         .exclude(role="Viewer")
         .first()
     )
-    if not actor or not Organization.objects.filter(pk=item.org_id, state="active").exists():
+    if (
+        not actor
+        or not Organization.objects.filter(Organization.live_filter(), pk=item.org_id).exists()
+    ):
         return False
     return Task.objects.filter(
         pk=item.task_id,

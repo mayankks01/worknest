@@ -13,6 +13,7 @@ def tenant_transaction(
     email_event="",
     file_id="",
     activity_id="",
+    lifecycle_id="",
 ):
     """Only trusted server identities/URL IDs enter here, never body-supplied context.
 
@@ -21,6 +22,7 @@ def tenant_transaction(
     Workers must enter this boundary explicitly, just like HTTP requests.
     """
     values = {
+        "worknest.lifecycle_id": str(lifecycle_id) if lifecycle_id else "",
         "worknest.activity_id": str(activity_id) if activity_id else "",
         "worknest.file_id": str(file_id) if file_id else "",
         "worknest.actor_id": str(actor_id) if actor_id else "",

@@ -2,7 +2,7 @@ import { ApiError, decode, getSession } from '../accounts/api';
 
 export type Organization = {
   id: string; display_name: string; slug: string; timezone: string; state: string;
-  created_at: string; membership: { id: string; role: 'Owner' | 'Admin' | 'Member' | 'Viewer' };
+  created_at: string; deletion_due_at?: string | null; membership: { id: string; role: 'Owner' | 'Admin' | 'Member' | 'Viewer' };
 };
 export type OrganizationPage = { results: Organization[]; next_cursor: string | null };
 
