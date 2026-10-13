@@ -2,11 +2,11 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 6 projects and tasks, plus team administration, organizations and accounts.** Teams can manage private project memberships, archive/restore projects, and plan work in persisted board/list views with assignees, due dates, filters and conflict-safe edits. The organization overview shows real scoped counts and tasks. See [projects and tasks](docs/PROJECTS.md) and [Step 6 verification](docs/STEP-6-VERIFICATION.md). This is a local development build, not a public deployment.
+**Current scope: Step 7 comments and private attachments, plus projects/tasks, teams, organizations and accounts.** Task discussions support plain-text comments and private files with content validation, real ClamAV scanning, authorized downloads and storage quota cleanup. See [collaboration](docs/COLLABORATION.md) and [Step 7 verification](docs/STEP-7-VERIFICATION.md). This is a local development build, not a public deployment.
 
 ## Quick start with Docker
 
-Requirements: Docker Desktop running in Linux container mode and Docker Compose v2. Use an unused set of local ports: 5173, 8000, 55432, 6379, 1025, 8025, 9000, and 9001. PostgreSQL uses host port 55432 to avoid existing local database services; change `DATABASE_PORT` in `.env` if needed.
+Requirements: Docker Desktop running in Linux container mode and Docker Compose v2. Use an unused set of local ports: 5173, 8000, 55432, 6379, 1025, 8025, 9000, 9001, and 3310. PostgreSQL uses host port 55432 to avoid existing local database services; change `DATABASE_PORT` in `.env` if needed.
 
 From this directory:
 
@@ -31,8 +31,9 @@ After verification, `/` opens your real organization list. Create an organizatio
 | Private object storage | S3 endpoint localhost:9000; local console http://localhost:9001 |
 | PostgreSQL | localhost:55432 (container port 5432) |
 | Redis | localhost:6379 |
+| ClamAV scanner | localhost:3310; allow up to 4 GiB RAM and initial signature download time |
 
-All host port mappings bind to loopback. `.env.example` contains local development credentials only. RustFS and its root credentials are local infrastructure placeholders; select and validate the pilot storage provider and a restricted service account before deployment. The initialization job creates a private bucket and refuses unexpected bucket policies. No application uploads or downloads are implemented yet.
+All host port mappings bind to loopback. `.env.example` contains local development credentials only. RustFS and its root credentials are local infrastructure placeholders; select and validate the pilot storage provider and a restricted service account before deployment. The initialization job creates a private bucket and refuses unexpected bucket policies. Application files now remain private and quarantined until their checks pass; downloads go through the authenticated API.
 
 View logs with `docker compose logs -f web worker`. After changing source, run `docker compose up -d --build` again. Stop with `docker compose down`; database and object volumes remain intact. Do not delete volumes to fix routine startup issues.
 
@@ -44,7 +45,7 @@ Use Python 3.12 and Node 22.16 or newer compatible Node LTS. Docker remains the 
 Copy-Item .env.example .env
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt
-docker compose up -d db redis mailpit storage-init worker beat
+docker compose up -d db redis mailpit storage-init scanner worker beat
 docker compose run --rm migrate
 .\scripts\run-backend.ps1 -Python .\.venv\Scripts\python.exe
 ```
@@ -89,7 +90,8 @@ backend/foundation/   Health endpoints and request IDs
 backend/accounts/     Global identities, account tokens, email jobs and API
 backend/organizations/ Organizations, memberships, tenant context, RLS, audit/outbox capture
 backend/projects/     Private projects, memberships, versioned tasks and project policy
-backend/tests/        Foundation, account, team, project and adversarial tenant checks
+backend/collab/       Comments, private attachments, scanning and storage cleanup
+backend/tests/        Foundation, account, team, project, collaboration and tenant checks
 frontend/src/         Account, organization, team and project UI, plus isolated preview fixtures
 infra/postgres/       Initial database roles and grants
 scripts/              Local startup helper
@@ -97,12 +99,12 @@ docs/                 Architecture and stage verification
 .github/workflows/    Backend, frontend, and integration checks
 ```
 
-Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. All twelve organization/team/project tenant tables have forced RLS. New tenant tables must receive transaction scoping, policies, relationship constraints, and isolation tests when introduced.
+Migrations run as `worknest_owner`; web and worker connections use `worknest_app`, which has no superuser, role creation, database creation, table ownership, or BYPASSRLS privilege. Initial grants apply to tables created by the migration role. All fourteen organization/team/project/collaboration tenant tables have forced RLS. New tenant tables must receive transaction scoping, policies, relationship constraints, and isolation tests when introduced.
 
 Step 3 defines the custom user before installing Django authentication, avoiding a premature default-user migration. The original content-type-only foundation has now been migrated to the custom user and session schema.
 
-The dependency versions are exact in Python requirements and the npm lockfile. PostgreSQL and Redis use verified immutable image digests; the other container images use explicit release tags. Use scanned immutable image digests for every image before pilot deployment. Google Fonts enhance the preview typography, with system font fallbacks if offline.
+The dependency versions are exact in Python requirements and the npm lockfile. PostgreSQL, Redis and ClamAV use verified immutable image digests; the other container images use explicit release tags. Use scanned immutable image digests for every image before pilot deployment. Google Fonts enhance the preview typography, with system font fallbacks if offline.
 
 ## Next checkpoint
 
-After reviewing Step 6, authorize **Step 7: comments and attachments** (discussions, private uploads, quarantine, scanning and downloads). Do not start another stage without the user's approval. Completed steps are committed and pushed to GitHub before asking to proceed.
+After reviewing Step 7, authorize **Step 8: notifications and reliability** (inbox, email preferences, audit views, failed jobs and reconciliation). Do not start another stage without the user's approval. Completed steps are committed and pushed to GitHub before asking to proceed.

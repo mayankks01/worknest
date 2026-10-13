@@ -6,10 +6,11 @@ from uuid import UUID
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import RequestDataTooBig, ValidationError
+from django.core.exceptions import RequestDataTooBig, TooManyFilesSent, ValidationError
 from django.core.validators import validate_email
 from django.db import DatabaseError, IntegrityError, transaction
 from django.http import JsonResponse
+from django.http.multipartparser import MultiPartParserError
 from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.views.decorators.debug import sensitive_post_parameters
@@ -48,7 +49,7 @@ def csrf_failure(request, reason=""):
     return error(request, "CSRF_FAILED", "Your security token expired. Refresh and try again.", 403)
 
 
-def endpoint(method, fields=(), scope=None, *, text_only=True):
+def endpoint(method, fields=(), scope=None, *, text_only=True, multipart=False):
     def decorate(view):
         @wraps(view)
         @sensitive_post_parameters()
@@ -62,13 +63,23 @@ def endpoint(method, fields=(), scope=None, *, text_only=True):
                 if request.method in ("POST", "PATCH") or (
                     not text_only and request.method == "DELETE"
                 ):
-                    if request.content_type != "application/json":
-                        return error(request, "UNSUPPORTED_MEDIA_TYPE", "Send a JSON body.", 415)
-                    data = json.loads(request.body)
-                    if not isinstance(data, dict) or any(key not in fields for key in data):
-                        raise InputError({"body": ["Unexpected fields or invalid JSON object."]})
-                    if text_only and any(not isinstance(value, str) for value in data.values()):
-                        raise InputError({"body": ["All fields must be text."]})
+                    if multipart:
+                        if request.content_type != "multipart/form-data":
+                            return error(
+                                request, "UNSUPPORTED_MEDIA_TYPE", "Send a file upload.", 415
+                            )
+                    else:
+                        if request.content_type != "application/json":
+                            return error(
+                                request, "UNSUPPORTED_MEDIA_TYPE", "Send a JSON body.", 415
+                            )
+                        data = json.loads(request.body)
+                        if not isinstance(data, dict) or any(key not in fields for key in data):
+                            raise InputError(
+                                {"body": ["Unexpected fields or invalid JSON object."]}
+                            )
+                        if text_only and any(not isinstance(value, str) for value in data.values()):
+                            raise InputError({"body": ["All fields must be text."]})
                     if scope:
                         email = normalize_email(data.get("email", ""))[:254]
                         wait = check_rate(request, scope, email)
@@ -81,6 +92,10 @@ def endpoint(method, fields=(), scope=None, *, text_only=True):
                 return view(request, data, *args, **kwargs)
             except (json.JSONDecodeError, UnicodeDecodeError):
                 return error(request, "VALIDATION_ERROR", "Send a valid JSON object.")
+            except (TooManyFilesSent, MultiPartParserError):
+                return error(
+                    request, "VALIDATION_ERROR", "Send exactly one valid file upload.", 400
+                )
             except RequestDataTooBig:
                 return error(request, "PAYLOAD_TOO_LARGE", "Request is too large.", 413)
             except InputError as exc:

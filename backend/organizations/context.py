@@ -5,7 +5,7 @@ from django.db import connection, transaction
 
 @contextmanager
 def tenant_transaction(
-    actor_id, org_id=None, *, discovery=False, invitation_hash="", email_event=""
+    actor_id, org_id=None, *, discovery=False, invitation_hash="", email_event="", file_id=""
 ):
     """Only trusted server identities/URL IDs enter here, never body-supplied context.
 
@@ -14,6 +14,7 @@ def tenant_transaction(
     Workers must enter this boundary explicitly, just like HTTP requests.
     """
     values = {
+        "worknest.file_id": str(file_id) if file_id else "",
         "worknest.actor_id": str(actor_id) if actor_id else "",
         "worknest.org_id": str(org_id) if org_id else "",
         "worknest.discovery": "on" if discovery else "off",

@@ -180,6 +180,7 @@ def collection(request, data):
                 member_limit=settings.ORGANIZATION_MEMBER_LIMIT,
                 project_limit=settings.ORGANIZATION_PROJECT_LIMIT,
                 task_limit=settings.ORGANIZATION_TASK_LIMIT,
+                storage_limit=settings.ORGANIZATION_STORAGE_LIMIT,
             )
             record(org, member, "organization.created", values)
             response = {"organization": serialize(org, member)}

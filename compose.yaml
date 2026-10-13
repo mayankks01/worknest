@@ -11,6 +11,7 @@ x-backend: &backend
     CELERY_BROKER_URL: redis://redis:6379/1
     EMAIL_HOST: mailpit
     S3_ENDPOINT_URL: http://storage:9000
+    CLAMAV_HOST: scanner
 
 services:
   db:
@@ -112,6 +113,19 @@ services:
       timeout: 3s
       retries: 20
 
+  scanner:
+    # Official stable image resolved 2026-10-12; pinned to reviewed bytes.
+    image: clamav/clamav:stable@sha256:638d90201ee7ee6a82d249a2fc23b132e578673b5f1f2766852b127676ca1ef6
+    volumes: ["scanner_data:/var/lib/clamav"]
+    ports: ["127.0.0.1:3310:3310"]
+    mem_limit: 4g
+    healthcheck:
+      test: ["CMD", "clamdscan", "--ping", "1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 120s
+
   storage-init:
     <<: *backend
     command: ["python", "initialize_storage.py"]
@@ -123,3 +137,4 @@ volumes:
   postgres_data:
   redis_data:
   storage_data:
+  scanner_data:

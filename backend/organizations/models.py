@@ -118,9 +118,15 @@ class OrganizationUsage(models.Model):
     project_limit = models.PositiveIntegerField(default=20)
     active_tasks = models.PositiveIntegerField(default=0)
     task_limit = models.PositiveIntegerField(default=10000)
+    storage_bytes = models.PositiveBigIntegerField(default=0)
+    storage_limit = models.PositiveBigIntegerField(default=1073741824)
 
     class Meta:
         constraints = [
+            models.CheckConstraint(
+                condition=models.Q(storage_bytes__lte=models.F("storage_limit")),
+                name="usage_storage_capacity",
+            ),
             models.CheckConstraint(
                 condition=models.Q(
                     active_members__gte=1, active_members__lte=models.F("member_limit")

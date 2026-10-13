@@ -23,10 +23,12 @@ INSTALLED_APPS = [
     "accounts",
     "organizations",
     "projects",
+    "collab",
 ]
 AUTH_USER_MODEL = "accounts.User"
 MIDDLEWARE = [
     "foundation.middleware.RequestIdMiddleware",
+    "collab.upload_limits.UploadLimitMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -106,6 +108,7 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_BROKER_CONNECTION_TIMEOUT = 3
 CELERY_TIMEZONE = "UTC"
 CELERY_BEAT_SCHEDULE = {
+    "recover-file-jobs": {"task": "collab.dispatch_files", "schedule": 15.0},
     "recover-invitation-emails": {"task": "organizations.dispatch_invitations", "schedule": 30.0},
     "recover-account-emails": {"task": "accounts.dispatch_emails", "schedule": 30.0},
 }
@@ -118,7 +121,7 @@ EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "false").lower() == "true"
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
-# Private storage integration is implemented in Step 7. No public media route exists.
+# Private attachment objects are streamed through live-authorized application routes.
 S3_ENDPOINT_URL = os.environ.get("S3_ENDPOINT_URL", "http://localhost:9000")
 S3_BUCKET = os.environ.get("S3_BUCKET", "worknest-private")
 S3_REGION = os.environ.get("S3_REGION", "us-east-1")
@@ -131,3 +134,10 @@ LOGGING = {
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "root": {"handlers": ["console"], "level": "INFO"},
 }
+
+ORGANIZATION_STORAGE_LIMIT = int(os.environ.get("ORGANIZATION_STORAGE_LIMIT", "1073741824"))
+ATTACHMENT_MAX_BYTES = int(os.environ.get("ATTACHMENT_MAX_BYTES", "10485760"))
+FILE_UPLOAD_MAX_MEMORY_SIZE = 65536
+DATA_UPLOAD_MAX_NUMBER_FILES = 1
+CLAMAV_HOST = os.environ.get("CLAMAV_HOST", "localhost")
+CLAMAV_PORT = int(os.environ.get("CLAMAV_PORT", "3310"))
