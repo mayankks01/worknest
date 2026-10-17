@@ -2,7 +2,7 @@
 
 A private home for a team's projects and tasks. Built from the WorkNest PRD v1.0, with an approval checkpoint after every stage.
 
-**Current scope: Step 9 search and data lifecycle, plus notifications, comments/files, projects/tasks, teams, organizations and accounts.** Search respects live project access. Owners/Admins can request private exports; Owners can schedule organization deletion with a seven-day cancellation window. Durable jobs enforce retention and cleanup. See [data lifecycle](docs/LIFECYCLE.md) and [Step 9 verification](docs/STEP-9-VERIFICATION.md). This is a local development build, not a public deployment.
+**Current scope: Step 10 release-readiness review, on top of the completed Step 9 application.** The repository includes isolated restore/purge tooling, synthetic demo data, measured load-test results, API documentation and keyboard improvements. All 188 existing regression tests pass after the performance fix. **Pilot release is not approved: local latency targets and the remaining deployment/accessibility gates are still open.** See [Step 10 verification](docs/STEP-10-VERIFICATION.md), [API guide](docs/API.md), [recovery runbook](docs/RECOVERY.md), [demo](docs/DEMO.md) and [release gates](docs/RELEASE-CHECKLIST.md).
 
 ## Quick start with Docker
 

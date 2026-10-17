@@ -9,14 +9,14 @@ import InviteAccept from '../organizations/InviteAccept';
 const paths = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/resend-verification'];
 
 function Frame({ children }: { children: ReactNode }) {
-  return <div className="account-layout">
+  return <div className="account-layout"><a className="skip-link" href="#account-main">Skip to sign-in content</a>
     <aside className="account-story">
       <a className="account-brand" href="/"><span className="brand-symbol"><Icon name="logo" /></span>WorkNest</a>
       <div className="story-content"><span className="story-eyebrow">A LITTLE CLARITY. A LOT OF PROGRESS.</span><h1>Your team.<br />Your space.<br /><span>Your next big thing.</span></h1><p>A private place to bring your people, projects, and everyday progress together.</p>
         <div className="story-board" aria-hidden="true"><div className="story-board-title"><span className="project-mark purple">W</span><div><strong>Website Redesign</strong><small>Great work starts with a clear plan.</small></div><span className="story-dot" /></div><div className="story-columns">{['To do', 'In progress', 'Done'].map((title, i) => <div key={title}><small>{title}</small><div className={`story-card story-card-${i}`}><span /><span /><i /></div><div className="story-card"><span /><i /></div></div>)}</div><div className="story-board-footer"><span>One shared direction.</span><span className="story-avatars">PS&nbsp; RM&nbsp; MK</span></div></div>
       </div><div className="story-footer"><span>WorkNest</span><span>Built around your team.</span></div>
     </aside>
-    <main className="account-main"><div className="account-top"><span>Your workspace starts here</span><a href="/preview">Explore the design preview <span aria-hidden="true">↗</span></a></div><div className="account-card">{children}</div><footer className="account-footer">Your team. Your space. <span>WorkNest</span></footer></main>
+    <main className="account-main" id="account-main" tabIndex={-1}><div className="account-top"><span>Your workspace starts here</span><a href="/preview">Explore the design preview <span aria-hidden="true">↗</span></a></div><div className="account-card">{children}</div><footer className="account-footer">Your team. Your space. <span>WorkNest</span></footer></main>
   </div>;
 }
 

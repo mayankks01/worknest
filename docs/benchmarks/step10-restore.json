@@ -1,0 +1,11 @@
+{
+  "source_database": "worknest_review_48096972b019",
+  "restored_database": "worknest_review_restore_48096972b019",
+  "tenants": 2,
+  "tasks": 16,
+  "restore_seconds": 2.176,
+  "task_content_matches": true,
+  "validated_constraints": true,
+  "restricted_role_rls": true,
+  "object_restore_and_scoped_purge": true
+}

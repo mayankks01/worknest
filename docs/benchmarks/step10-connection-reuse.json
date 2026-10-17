@@ -1,0 +1,25 @@
+{
+  "tenants": 100,
+  "tasks": 100000,
+  "concurrency": 50,
+  "rounds": 10,
+  "seconds": 64.01,
+  "read": {
+    "count": 1000,
+    "errors": 0,
+    "statuses": {
+      "200": 1000
+    },
+    "p50_ms": 1067.14,
+    "p95_ms": 1585.67
+  },
+  "write": {
+    "count": 1000,
+    "errors": 0,
+    "statuses": {
+      "200": 1000
+    },
+    "p50_ms": 1814.41,
+    "p95_ms": 2433.13
+  }
+}

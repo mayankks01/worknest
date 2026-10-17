@@ -34,14 +34,19 @@ def tenant_transaction(
     with transaction.atomic():
         previous = {}
         with connection.cursor() as cursor:
-            for key, value in values.items():
-                cursor.execute("SELECT current_setting(%s, true)", [key])
-                previous[key] = cursor.fetchone()[0] or ""
-                cursor.execute("SELECT set_config(%s, %s, true)", [key, value])
+            keys = list(values)
+            cursor.execute("SELECT " + ", ".join("current_setting(%s, true)" for _ in keys), keys)
+            previous = dict(zip(keys, (value or "" for value in cursor.fetchone()), strict=True))
+            cursor.execute(
+                "SELECT " + ", ".join("set_config(%s, %s, true)" for _ in keys),
+                [item for key in keys for item in (key, values[key])],
+            )
         try:
             yield
         finally:
             if not connection.needs_rollback:
                 with connection.cursor() as cursor:
-                    for key, value in previous.items():
-                        cursor.execute("SELECT set_config(%s, %s, true)", [key, value])
+                    cursor.execute(
+                        "SELECT " + ", ".join("set_config(%s, %s, true)" for _ in previous),
+                        [item for pair in previous.items() for item in pair],
+                    )

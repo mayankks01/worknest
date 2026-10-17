@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ApiError } from '../accounts/api';
 
 export type Project = { id: string; name: string; description: string; archived_at: string | null; task_count: number; completed_count: number };
@@ -25,6 +25,7 @@ export function Progress({ project }: { project: Project }) {
 }
 export function Modal({ title, busy, close, children }: { title: string; busy: boolean; close: () => void; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
-  useEffect(() => { const dialog = ref.current; dialog?.showModal(); return () => dialog?.close(); }, []);
+  const [opener] = useState(() => document.activeElement instanceof HTMLElement ? document.activeElement : null);
+  useEffect(() => { const dialog = ref.current; dialog?.showModal(); return () => { dialog?.close(); if (opener?.isConnected) opener.focus(); }; }, [opener]);
   return <dialog className="project-modal" ref={ref} onCancel={e => { e.preventDefault(); if (!busy) close(); }} aria-label={title}><div className="project-modal-heading"><h2>{title}</h2><button type="button" className="project-close" aria-label="Close dialog" onClick={close} disabled={busy}>×</button></div>{children}</dialog>;
 }

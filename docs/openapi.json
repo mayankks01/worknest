@@ -1,0 +1,3544 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "WorkNest API",
+    "version": "1.0.0",
+    "description": "Same-origin session API. Unknown JSON fields are rejected. Hidden resources return 404; disallowed visible actions return 403. Task/comment edits require version. See API.md for response details."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "session": []
+    }
+  ],
+  "paths": {
+    "/api/v1/invitations/preview/": {
+      "post": {
+        "operationId": "post_api_v1_invitations_preview",
+        "summary": "Preview",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invitations/accept/": {
+      "post": {
+        "operationId": "post_api_v1_invitations_accept",
+        "summary": "Accept",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/search/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_search",
+        "summary": "Search",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "project",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/exports/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_exports",
+        "summary": "Exports",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_exports",
+        "summary": "Exports",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/exports/{export_id}/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_exports_export_id",
+        "summary": "Export detail",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_exports_export_id",
+        "summary": "Export detail",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/exports/{export_id}/download/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_exports_export_id_download",
+        "summary": "Download",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Authorized private download, no-store.",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/deletion/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_deletion",
+        "summary": "Deletion",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_deletion",
+        "summary": "Deletion",
+        "tags": [
+          "lifecycle"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "writeOnly": true
+                  },
+                  "confirmation": {
+                    "type": "string"
+                  },
+                  "action": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/notifications/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_notifications",
+        "summary": "Inbox",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/notifications/preferences/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_notifications_preferences",
+        "summary": "Preferences",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_notifications_preferences",
+        "summary": "Preferences",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "assignment_email": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/notifications/{notification_id}/": {
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_notifications_notification_id",
+        "summary": "Mark read",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "read": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/audit/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_audit",
+        "summary": "Audit",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/operations/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_operations",
+        "summary": "Operations",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/operations/{kind}/{job_id}/retry/": {
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_operations_kind_job_id_retry",
+        "summary": "Retry",
+        "tags": [
+          "activity"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/tasks/{task_id}/comments/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_tasks_task_id_comments",
+        "summary": "Comments",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_tasks_task_id_comments",
+        "summary": "Comments",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/comments/{comment_id}/": {
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_comments_comment_id",
+        "summary": "Comment detail",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "body": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_api_v1_orgs_org_id_comments_comment_id",
+        "summary": "Comment detail",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/tasks/{task_id}/attachments/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_tasks_task_id_attachments",
+        "summary": "Attachment collection",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_tasks_task_id_attachments",
+        "summary": "Attachment collection",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/attachments/{attachment_id}/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_attachments_attachment_id",
+        "summary": "Attachment detail",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_attachments_attachment_id",
+        "summary": "Attachment detail",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "filename": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_api_v1_orgs_org_id_attachments_attachment_id",
+        "summary": "Attachment detail",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/attachments/{attachment_id}/download/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_attachments_attachment_id_download",
+        "summary": "Download",
+        "tags": [
+          "collab"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Authorized private download, no-store.",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/dashboard/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_dashboard",
+        "summary": "Dashboard",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_projects",
+        "summary": "Projects",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_projects",
+        "summary": "Projects",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/{project_id}/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_projects_project_id",
+        "summary": "Project detail",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_projects_project_id",
+        "summary": "Project detail",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/{project_id}/archive/": {
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_projects_project_id_archive",
+        "summary": "Archive",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/{project_id}/restore/": {
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_projects_project_id_restore",
+        "summary": "Archive",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/{project_id}/members/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_projects_project_id_members",
+        "summary": "Members",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_projects_project_id_members",
+        "summary": "Members",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "membership_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/{project_id}/members/{member_id}/": {
+      "delete": {
+        "operationId": "delete_api_v1_orgs_org_id_projects_project_id_members_member_id",
+        "summary": "Member remove",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/projects/{project_id}/tasks/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_projects_project_id_tasks",
+        "summary": "Tasks",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_projects_project_id_tasks",
+        "summary": "Tasks",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "assignee_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "priority": {
+                    "type": "string"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "format": "date",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/tasks/{task_id}/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_tasks_task_id",
+        "summary": "Task detail",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_tasks_task_id",
+        "summary": "Task detail",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "assignee_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  },
+                  "priority": {
+                    "type": "string"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "format": "date",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_api_v1_orgs_org_id_tasks_task_id",
+        "summary": "Task detail",
+        "tags": [
+          "projects"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/": {
+      "get": {
+        "operationId": "get_api_v1_orgs",
+        "summary": "Collection",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs",
+        "summary": "Collection",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "display_name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id",
+        "summary": "Detail",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id",
+        "summary": "Detail",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "display_name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/members/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_members",
+        "summary": "Members",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/members/{member_id}/": {
+      "patch": {
+        "operationId": "patch_api_v1_orgs_org_id_members_member_id",
+        "summary": "Member detail",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_api_v1_orgs_org_id_members_member_id",
+        "summary": "Member detail",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/invitations/": {
+      "get": {
+        "operationId": "get_api_v1_orgs_org_id_invitations",
+        "summary": "Invitations",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_invitations",
+        "summary": "Invitations",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/invitations/{invitation_id}/resend/": {
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_invitations_invitation_id_resend",
+        "summary": "Invitation action",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "invitation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/invitations/{invitation_id}/revoke/": {
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_invitations_invitation_id_revoke",
+        "summary": "Invitation action",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "invitation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orgs/{org_id}/transfer-ownership/": {
+      "post": {
+        "operationId": "post_api_v1_orgs_org_id_transfer_ownership",
+        "summary": "Transfer",
+        "tags": [
+          "organizations"
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "member_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "writeOnly": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/session/": {
+      "get": {
+        "operationId": "get_api_v1_auth_session",
+        "summary": "Session",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/auth/me/": {
+      "get": {
+        "operationId": "get_api_v1_auth_me",
+        "summary": "Me",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register/": {
+      "post": {
+        "operationId": "post_api_v1_auth_register",
+        "summary": "Register",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "writeOnly": true
+                  },
+                  "display_name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login/": {
+      "post": {
+        "operationId": "post_api_v1_auth_login",
+        "summary": "Sign in",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "writeOnly": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout/": {
+      "post": {
+        "operationId": "post_api_v1_auth_logout",
+        "summary": "Sign out",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-email/": {
+      "post": {
+        "operationId": "post_api_v1_auth_verify_email",
+        "summary": "Verify email",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/resend-verification/": {
+      "post": {
+        "operationId": "post_api_v1_auth_resend_verification",
+        "summary": "Resend",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password-reset/": {
+      "post": {
+        "operationId": "post_api_v1_auth_password_reset",
+        "summary": "Reset request",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/password-reset/confirm/": {
+      "post": {
+        "operationId": "post_api_v1_auth_password_reset_confirm",
+        "summary": "Reset confirm",
+        "tags": [
+          "accounts"
+        ],
+        "parameters": [
+          {
+            "name": "X-CSRFToken",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session CSRF token; send with its cookie."
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "token": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "writeOnly": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/live/": {
+      "get": {
+        "operationId": "get_api_v1_health_live",
+        "summary": "Live",
+        "tags": [
+          "foundation"
+        ],
+        "parameters": [],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/health/ready/": {
+      "get": {
+        "operationId": "get_api_v1_health_ready",
+        "summary": "Ready",
+        "tags": [
+          "foundation"
+        ],
+        "parameters": [],
+        "responses": {
+          "2XX": {
+            "description": "Successful JSON response, binary download or empty 204 response."
+          },
+          "default": {
+            "description": "Validation, access, conflict, throttle or dependency error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "sessionid"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message",
+              "request_id",
+              "details"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "request_id": {
+                "type": "string"
+              },
+              "details": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

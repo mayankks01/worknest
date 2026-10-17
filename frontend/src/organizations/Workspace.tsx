@@ -70,7 +70,7 @@ export default function Workspace({ user }: { user: Account }) {
   }
   const canEdit = org && ['Owner', 'Admin'].includes(org.membership.role);
   const choices = org && !orgs.some(item => item.id === org.id) ? [org, ...orgs] : orgs;
-  return <div className="wn-shell">
+  return <div className="wn-shell"><a className="skip-link" href="#workspace-main">Skip to workspace content</a>
     <aside className="wn-sidebar">
       <a className="wn-brand" href="/orgs"><span className="brand-symbol"><Icon name="logo" /></span>WorkNest</a>
       <label className="wn-switch"><span>YOUR WORKSPACE</span><select aria-label="Switch organization" value={org?.id ?? ''} onChange={event => location.assign(event.target.value ? `/orgs/${event.target.value}` : '/orgs')}><option value="">All organizations</option>{choices.map(item => <option value={item.id} key={item.id}>{item.display_name}</option>)}</select></label>
@@ -78,7 +78,7 @@ export default function Workspace({ user }: { user: Account }) {
       <div className="wn-sidebar-bottom"><span className="wn-private"><Icon name="check" />Your private workspace</span><button onClick={() => void signOut()} disabled={signingOut}>{signingOut ? 'Signing out…' : 'Sign out'} <Icon name="arrow" /></button></div>
     </aside>
     <div className="wn-content"><header className="wn-topbar"><span>Workspace <span className="wn-divider">/</span> {creating ? 'Create organization' : org?.display_name ?? 'Organizations'}</span><div className="wn-profile"><span className="profile-avatar">{user.display_name.slice(0, 2).toUpperCase()}</span><span>{user.display_name}</span></div></header>
-      <main className="wn-main">
+      <main className="wn-main" id="workspace-main" tabIndex={-1}>
         {loading ? <div className="wn-panel wn-empty" role="status">Opening your workspace…</div> : error ? <div className="wn-panel wn-empty" role="alert"><Icon name="info" /><h1>Let’s get you back to work.</h1><p>{error}</p><div className="wn-actions"><a className="wn-button" href="/orgs">Your organizations</a><button className="wn-secondary" onClick={() => location.reload()}>Try again</button></div></div> : creating ? <><a className="wn-back" href="/orgs">← Your organizations</a><div className="wn-heading"><div><span className="wn-eyebrow">A PLACE FOR YOUR TEAM</span><h1>Create an organization</h1><p>Give your next big thing a space of its own.</p></div></div><OrganizationForm /></> : org ? <>
           <div className="wn-heading"><div className="wn-title-group"><span className="wn-org-icon">{org.display_name[0].toUpperCase()}</span><div><h1>{org.display_name}</h1><p>{activityMode ? 'Keep up with the work that matters.' : projects ? 'A shared direction. One task at a time.' : team ? 'The people behind your next big thing.' : settings ? 'Organization settings' : 'Your organization, at a glance.'}</p></div></div><span className="wn-role">{org.membership.role}</span></div>
           <div className="wn-tabs"><a className={!settings && !team && !projects && !activityMode && !lifecycleMode ? 'active' : ''} href={orgLink(org)}>Overview</a><a className={projects ? 'active' : ''} href={`${orgLink(org)}/projects`}>Projects</a><a className={team ? 'active' : ''} href={`${orgLink(org)}/members`}>Members</a><a className={settings ? 'active' : ''} href={`${orgLink(org)}/settings`}>Settings</a></div>

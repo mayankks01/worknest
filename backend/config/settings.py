@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "rest_framework",
+    "foundation",
     "accounts",
     "organizations",
     "projects",
@@ -47,7 +48,9 @@ DATABASES = {
         "PASSWORD": os.environ.get("DATABASE_PASSWORD", ""),
         "HOST": os.environ.get("DATABASE_HOST", "localhost"),
         "PORT": os.environ.get("DATABASE_PORT", "5432"),
-        "CONN_MAX_AGE": 0,
+        # Tenant context is SET LOCAL and restored on exit; bounded reuse is opt-in.
+        "CONN_MAX_AGE": int(os.environ.get("DATABASE_CONN_MAX_AGE", "0")),
+        "CONN_HEALTH_CHECKS": True,
         "OPTIONS": {"connect_timeout": 3},
     }
 }

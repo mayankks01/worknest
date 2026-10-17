@@ -257,3 +257,8 @@ td .progress-track { width: 95px; }
   .task-list-row > .avatar { margin-left: auto; } .page-footer { flex-direction: column; gap: 8px; line-height: 1.6; font-size: 9px; } .skip-link { left: 15px; }
 }
 @media (prefers-reduced-motion:reduce) { * { transition: none !important; } }
+
+/* Keep keyboard skip navigation reachable on narrow screens. */
+.skip-link { left: 12px; max-width: calc(100vw - 24px); }
+textarea:focus-visible { outline: 3px solid #678bff; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

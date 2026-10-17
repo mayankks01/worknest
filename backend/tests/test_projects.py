@@ -362,3 +362,27 @@ def test_offboard_rollback_and_csrf(signed_in, owner, app_role, org, work):
         call(csrf, app_role, f"{org['id']}/projects/", {"name": "No CSRF"}, "POST").status_code
         == 403
     )
+
+
+def test_statement_permission_checks_do_not_survive_revocation_or_context_change(
+    signed_in, owner, app_role, org, work
+):
+    task(signed_in, app_role, org, work)
+    member, _ = seed_member(org, "Admin")
+    with restricted(app_role), connection.cursor() as cursor:
+        cursor.execute("PREPARE review_task_count AS SELECT count(*) FROM projects_task")
+        try:
+            with tenant_transaction(member.user_id, org["id"]):
+                cursor.execute("EXECUTE review_task_count")
+                assert cursor.fetchone()[0] == 1
+                with tenant_transaction(owner.id, org["id"]):
+                    Membership.objects.filter(pk=member.id).update(state="removed")
+                cursor.execute("EXECUTE review_task_count")
+                assert cursor.fetchone()[0] == 0
+            with tenant_transaction(owner.id, org["id"]):
+                cursor.execute("EXECUTE review_task_count")
+                assert cursor.fetchone()[0] == 1
+            cursor.execute("EXECUTE review_task_count")
+            assert cursor.fetchone()[0] == 0
+        finally:
+            cursor.execute("DEALLOCATE review_task_count")
